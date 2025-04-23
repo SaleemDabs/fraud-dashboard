@@ -40,7 +40,13 @@
                 </table>
             </div>
         </div>
-
+        <!--this is where we call api ipapi for geolocation (it was the only free one) -->
+    <div class="mt-5">
+            <h5 class="text-center">Visitor Info (from ipapi.co)</h5>
+            <ul class="list-group" id="geo-info">
+                <li class="list-group-item text-center text-muted">Loading location info...</li>
+            </ul>
+        </div>
         <p class="mt-4 text-center text-muted">
             This page is hosted on the web server at <code>/var/www/18.206.35.123/index.html</code>
         </p>
@@ -55,6 +61,11 @@
             dataType: 'json',
             success: function(data) {
                 const tbody = document.getElementById('fraud-table-body');
+                 tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No fraud records found.</td></tr>';
+                    return;
+                }
                 data.forEach(entry => {
                     const safeReason = (entry.Flag_Reason || '').replace(/'/g, "\\'");
                     const row = document.createElement('tr');
@@ -97,6 +108,16 @@
                 }
             });
         }
+        //this is the api integration
+         $.get('https://ipapi.co/json/', function(data) {
+            $('#geo-info').html(`
+                <li class="list-group-item"><strong>IP:</strong> ${data.ip}</li>
+                <li class="list-group-item"><strong>City:</strong> ${data.city}</li>
+                <li class="list-group-item"><strong>Region:</strong> ${data.region}</li>
+                <li class="list-group-item"><strong>Country:</strong> ${data.country_name}</li>
+                <li class="list-group-item"><strong>Org/ISP:</strong> ${data.org}</li>
+            `);
+        });
     </script>
 
 </body>
